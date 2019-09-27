@@ -1,0 +1,261 @@
+<?php
+// ini_set('error_reporting', E_ALL);
+// ini_set('display_errors', 'on');
+
+$token = '366597337b19a84633679bfd43ac9d3a1029e6e3dd5e1f3e777f6d580105b0f74344d9b6ebbe49dd589dc'; 
+$confirmation_token = 'ea79ef9b'; 
+$ids_admin			= 137038675;
+$default_scrope 	= 2000; //стандартное кол-во баллов при регистрации в программе
+$min_rate			=  100;	//минимальная ставка
+$point_for_entry	=  100; //сколько начислиться при вступлении в группу
+$point_for_repost	=   10; //за репост
+$point_for_like 	=	 1; //за лайк
+
+
+
+
+
+
+
+
+
+
+
+// $text = "ol";
+// 	    $keyboard = '{"buttons":[[{"action":{"type":"text","payload":"{\"button\":d\"1\"}","label":"Negative"},"color":"negative"}]],"one_time":false}';
+	    
+// 		if	($attach == "") unset($attach);
+// 		if ($text == "") unset($text);
+// 		$attach = implode(',', $attach);
+// 		global $token;
+// 		$request_params = array( 
+// 		'message' => $text, 
+// 		'user_ids' => $ids_admin, 
+// 		//'attachment' => $attach,
+// 		//'keyboard' =>$keyboard,
+// 		'access_token' => $token, 
+// 		'v' => '5.9'); 
+		
+// 		$get_params = http_build_query($request_params); 
+// 		//echo $get_params;
+// 		//file_get_contents('https://api.vk.com/method/messages.send?'. $get_params); 
+
+function create_photo($src){
+    global $token;
+		$request_params = array( 
+        "peer_id" => 137038675,
+		'access_token' => $token, 
+		'v' => '5.9'); 
+		
+		$get_params = http_build_query($request_params); 
+		$response = json_decode(file_get_contents('https://api.vk.com/method/photos.getMessagesUploadServer?'.$get_params))->response; 
+        $url = $response->upload_url;
+$curl_file = curl_file_create(__DIR__ . '/'.$src, 'mimetype' , 'image.jpeg');
+ 
+$ch = curl_init($url);  
+curl_setopt($ch, CURLOPT_POST, 1);  
+curl_setopt($ch, CURLOPT_POSTFIELDS, array('photo' => $curl_file));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_HEADER, false);
+$res = json_decode(curl_exec($ch));
+curl_close($ch);	
+$request_params = array( 
+        "photo" => $res->photo,
+        "server" =>$res->server,
+        "hash" =>$res->hash,
+		'access_token' => $token, 
+		'v' => '5.9'); 
+		
+		$get_params = http_build_query($request_params); 
+$photo = json_decode(file_get_contents('https://api.vk.com/method/photos.saveMessagesPhoto?'.$get_params))->response[0];
+return $photo;
+}
+
+
+
+	//echo $file_age = (int)((time() - filemtime('current_source.txt'))/60);
+
+
+	
+	
+//   file_put_contents('current_source.txt'," hi,and this is ok");
+
+		if (!isset($_REQUEST)) { 
+	return; 
+	} 
+
+// 	Получаем и декодируем уведомление 
+	$data = json_decode(file_get_contents('php://input')); 
+	//send_mass('олр',137038675);	
+
+	switch ($data->type) { 
+	case 'confirmation': 
+		echo $confirmation_token; 
+	break; 
+	//Если это уведомление о новом сообщении... 
+	case 'message_new': processing_mess();
+	break; }
+	
+	
+	
+	
+	
+	
+	
+	
+	function processing_mess(){
+		global $data,$min_rate;
+		$user_id = $data->object->peer_id; 
+		switch($data->object->text){
+		    case "1":case "1 корпус":
+		        $photo = create_photo("spo.jpg");
+                $att = array("photo".$photo->owner_id."_".$photo->id."_".$photo->access_key);
+                send_mass("",$user_id,$att);
+		    break;
+		    case "2":case "2 корпус":
+		        $photo = create_photo("npo.jpg");
+                $att = array("photo".$photo->owner_id."_".$photo->id."_".$photo->access_key);
+               send_mass("",$user_id,$att);
+            break;
+			case "счет" :
+				$out = "На вашем счете ".bd_serch($user_id);
+				send_mass($out,$user_id);
+			break;
+			case "Начать": case "Справка": case "справка": case"?":
+				send_mass("Ваш счет будет создан после выполнения одного из действий: запросить счет или сделать ставку.<br>После создания счета, на нем будет сразу же лежать 2000 баллов<br>Чтобы посмотретьсвой состояние счета отправте слово счет<br>Сделать ставку можно отправив символ * и значение ставки",$user_id);
+			break;
+			case "пере":
+				$attach = $data->object->attachments;
+				$out_att = array();
+
+				foreach ($attach as $value) {
+				 	$type = $value->type;
+				 	$id = $value->$type->id;
+				 	$owner_id = $value->$type->owner_id;
+				 	$str_push = $type.$owner_id."_".$id;
+				 	array_push($out_att,$str_push);
+					}
+				 
+				send_mass("",$user_id,$out_att);
+			break;
+			default:
+				if($data->object->text{0} == "*"){				//если первй символ *
+					$rest = substr($data->object->text, 1);
+					$ball = bd_serch($user_id);
+					if ($rest<=$ball){
+						if ($rest>=$min_rate){
+						switch (rand(1, 4)){
+							case 1:
+								$ball = $ball + $rest;
+								bd_edit($user_id,$ball);
+								send_mass("увеличилось на {$rest}, теперь у вас {$ball}",$user_id);
+							break;
+							case 2:
+								$rest = $rest/2;
+								$ball = $ball + $rest;
+								bd_edit($user_id,$ball);
+								send_mass("увеличилось на {$rest} теперь у вас {$ball}",$user_id);
+							break;
+							case 3:
+								$rest = $rest/2;
+								$ball = $ball - $rest;
+								bd_edit($user_id,$ball);
+								send_mass("уменьшилось на {$rest} теперь у вас {$ball}",$user_id);
+							break;
+							case 4: 
+								$ball = $ball - $rest;
+								bd_edit($user_id,$ball);
+								send_mass("уменьшилось на {$rest} теперь у вас {$ball}",$user_id);
+							break;
+								};
+							}else{
+								send_mass("Минимальная ставка {$min_rate}",$user_id);
+							};
+						
+						}else{
+						send_mass("У вас лишь {$ball}",$user_id);}
+				}else{
+					
+				 $attach = $data->object->attachments;
+				 $text =$data->object->text;
+				 $out_att = array();
+
+				foreach ($attach as $value) {
+				 	$type = $value->type;
+				 	$id = $value->$type->id;
+				 	$owner_id = $value->$type->owner_id;
+				 	$str_push = $type.$owner_id."_".$id;
+				 	array_push($out_att,$str_push);
+					}
+				 
+				send_mass($text,$user_id,$out_att);
+					
+				};
+		 }
+	}
+ echo('ok');	
+	//send_mass("",137038675,array("photo445654414_456239253"));
+
+function send_mass($text, $user_id, $attach = ""){
+	   /* $keyboard = array(
+	        "one_time"=> false,
+ 	        "buttons"=> array(
+	            array(
+ 	                "action"=>  array(
+	                    "type" => "text",
+                         "payload"=>  "{\"button\": \"1\"}",
+                          "label"=> "1 корпус"
+ 	                    ),
+ 	                "color"=> "negative"
+	                )
+	            )
+	        );*/
+	    $keyboard = '{"buttons":[[{"action":{"type":"text","label":"1 корпус"},"color":"negative"}]],"one_time":false}';
+		if	($attach == "") unset($attach);
+		if ($text == "")unset($text);
+		$attach = implode(',', $attach);
+	global $token;
+ 		$request_params = array( 
+		'message' => $text, 
+		'user_ids' => $user_id, 
+		'attachment'  => $attach,
+		'keyboard' =>$keyboard,
+		'access_token' => $token, 
+		'v' => '5.9'); 
+		
+		$get_params = http_build_query($request_params); 
+		file_get_contents('https://api.vk.com/method/messages.send?'. $get_params); 
+ 	};
+	
+function bd_serch($user_id){	
+	$link = new mysqli('localhost', "cm56270_like", '10119alina', 'cm56270_like');
+	if ( !$link ) die("ошибка баз данных");
+	$link ->query("SET NAMES 'utf8' ");
+	$query = 'SELECT * FROM `очки` WHERE `id`IN ('.$user_id.')';//;SELECT * FROM users WHERE age IN (21,26,33)
+	$bd_user_ids = mysqli_query($link,$query);
+		
+	if($varible = mysqli_fetch_row($bd_user_ids)){		//условие существования id в базе данных
+		return	$varible[1];
+		}else{
+			global $default_scrope;
+			$link ->query("INSERT INTO очки (id, point) VALUE ('".$user_id."', '".$default_scrope."')");
+			return $default_scrope;
+		};
+	mysqli_close($link);
+
+}
+	function bd_edit($user_id,$value){
+		$link = new mysqli('localhost', "cm56270_like", '10119alina', 'cm56270_like');
+		$link ->query("UPDATE `очки` SET point ='{$value}' WHERE `id`= '".$user_id."'");
+	}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
