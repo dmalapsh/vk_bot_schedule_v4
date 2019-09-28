@@ -2,8 +2,8 @@
 // ini_set('error_reporting', E_ALL);
 // ini_set('display_errors', 'on');
 
-$token = '366597337b19a84633679bfd43ac9d3a1029e6e3dd5e1f3e777f6d580105b0f74344d9b6ebbe49dd589dc'; 
-$confirmation_token = 'ea79ef9b'; 
+$token = 'b67602f255d7b4ee1be0d0291ae66906f59b79a290edb36a8c63c0f8a92965de9a07fc673ade0b76435e6'; 
+$confirmation_token = '754fbdb5'; 
 $ids_admin			= 137038675;
 $default_scrope 	= 2000; //стандартное кол-во баллов при регистрации в программе
 $min_rate			=  100;	//минимальная ставка
@@ -16,29 +16,6 @@ $point_for_like 	=	 1; //за лайк
 
 
 
-
-
-
-
-
-// $text = "ol";
-// 	    $keyboard = '{"buttons":[[{"action":{"type":"text","payload":"{\"button\":d\"1\"}","label":"Negative"},"color":"negative"}]],"one_time":false}';
-	    
-// 		if	($attach == "") unset($attach);
-// 		if ($text == "") unset($text);
-// 		$attach = implode(',', $attach);
-// 		global $token;
-// 		$request_params = array( 
-// 		'message' => $text, 
-// 		'user_ids' => $ids_admin, 
-// 		//'attachment' => $attach,
-// 		//'keyboard' =>$keyboard,
-// 		'access_token' => $token, 
-// 		'v' => '5.9'); 
-		
-// 		$get_params = http_build_query($request_params); 
-// 		//echo $get_params;
-// 		//file_get_contents('https://api.vk.com/method/messages.send?'. $get_params); 
 
 function create_photo($src){
     global $token;
@@ -108,12 +85,12 @@ return $photo;
 		global $data,$min_rate;
 		$user_id = $data->object->peer_id; 
 		switch($data->object->text){
-		    case "1":case "1 корпус":
+		    case "1":case "🏢 1 корпус": case "🏢 Корпус 1":
 		        $photo = create_photo("spo.jpg");
                 $att = array("photo".$photo->owner_id."_".$photo->id."_".$photo->access_key);
                 send_mass("",$user_id,$att);
 		    break;
-		    case "2":case "2 корпус":
+		    case "2":case "🏢 2 корпус":
 		        $photo = create_photo("npo.jpg");
                 $att = array("photo".$photo->owner_id."_".$photo->id."_".$photo->access_key);
                send_mass("",$user_id,$att);
@@ -123,7 +100,9 @@ return $photo;
 				send_mass($out,$user_id);
 			break;
 			case "Начать": case "Справка": case "справка": case"?":
-				send_mass("Ваш счет будет создан после выполнения одного из действий: запросить счет или сделать ставку.<br>После создания счета, на нем будет сразу же лежать 2000 баллов<br>Чтобы посмотретьсвой состояние счета отправте слово счет<br>Сделать ставку можно отправив символ * и значение ставки",$user_id);
+				send_mass("Чтобы получить расписание, отправьте цифровой номер вашего корпуса. Или нажмите на нужную кнопку. Также благодаря тому что этот бот был разработан на основе уже существующего, у него остался игровой функционал. Ваш счет будет создан после выполнения одного из действий: запросить счет или сделать ставку.<br>После создания счета, на нем будет сразу же лежать 2000 баллов.
+					Чтобы посмотреть состояние счета, отправьте слово счет
+					Сделать ставку можно отправив символ * и значение ставки(минимальная - 100 баллов), например: *2000",$user_id);
 			break;
 			case "пере":
 				$attach = $data->object->attachments;
@@ -175,7 +154,8 @@ return $photo;
 						
 						}else{
 						send_mass("У вас лишь {$ball}",$user_id);}
-				}else{
+				}
+				else{
 					
 				 $attach = $data->object->attachments;
 				 $text =$data->object->text;
@@ -193,28 +173,21 @@ return $photo;
 					
 				};
 		 }
+		 
 	}
- echo('ok');	
+ 	
+echo('ok');
 	//send_mass("",137038675,array("photo445654414_456239253"));
-
 function send_mass($text, $user_id, $attach = ""){
-	   /* $keyboard = array(
-	        "one_time"=> false,
- 	        "buttons"=> array(
-	            array(
- 	                "action"=>  array(
-	                    "type" => "text",
-                         "payload"=>  "{\"button\": \"1\"}",
-                          "label"=> "1 корпус"
- 	                    ),
- 	                "color"=> "negative"
-	                )
-	            )
-	        );*/
-	    $keyboard = '{"buttons":[[{"action":{"type":"text","label":"1 корпус"},"color":"negative"}]],"one_time":false}';
+
+	    $keyboard = '{"buttons":[
+	        [{"action":{"type":"text","label":"🏢 1 корпус"},"color":"negative"},{"action":{"type":"text","label":"🏢 2 корпус"},"color":"negative"}]
+	        ],"one_time":false}';
 		if	($attach == "") unset($attach);
-		if ($text == "")unset($text);
-		$attach = implode(',', $attach);
+		if ($text == ""){
+			unset($text);}
+			$attach = implode(',', $attach);;
+		
 	global $token;
  		$request_params = array( 
 		'message' => $text, 
