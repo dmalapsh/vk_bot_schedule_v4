@@ -14,10 +14,11 @@ class User extends Model {
 //	public $timestamps = false;
 	public $incrementing = false;
 
-	public function subscribe($status, $str = null){
+	public function subscribe($status, $str = null, $is_student = 1){
 		$this->update([
 			'subscribe_status' => $status,
 			'search_string'    => $str,
+			'is_student'       => $is_student
 		]);
 	}
 	public function background(){

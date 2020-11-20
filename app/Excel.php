@@ -4,6 +4,9 @@
 namespace App;
 
 
+
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Excel {
 	public $styleArray = [
 		'font' => [
@@ -82,6 +85,11 @@ class Excel {
 		}
 	}
 
+	public function save(){
+		$path = storage_path('app/tmp.xlsx');
+		$writer = new Xlsx($this->spreadsheet);
+		$writer->save($path);
+	}
 
 	public function getSpreadsheet(){
 		return $this->spreadsheet;

@@ -4,13 +4,15 @@
 namespace App;
 
 
+use App\Jobs\ProcScheduleJob;
+use App\Jobs\ProcTiSchedule;
 use Imagick;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Schedule {
 	public static function checkUpdate($name){
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http://rasp.kolledgsvyazi.ru/$name.pdf");
+		curl_setopt($ch, CURLOPT_URL, "http://rasp.kolledgsvyazi.ru/$name.xls");
 		curl_setopt($ch, CURLOPT_HEADER, true);
 		curl_setopt($ch, CURLOPT_NOBODY, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -24,6 +26,7 @@ class Schedule {
 	}
 
 	public static function clearBG(){
+//		return ['npo'=>true, 'spo'=>true];
 
 		$upd = [
 			'npo' => 	self::checkUpdate('npo'),
@@ -43,40 +46,98 @@ class Schedule {
 	public static function checkSchedule(){
 
 		$bgs    = self::getBg();
+		$bgs[0] = null;
 		$upd    = self::clearBG();
 
-		foreach($bgs as $id => $url) {
-			$imgs_arr = [];
-			foreach(['npo', 'spo'] as $item){
-				if ($upd[$item]) {
-//					dd('ok');
-					$imgs = self::readePdf("http://rasp.kolledgsvyazi.ru/$item.pdf", $url);
-					$imgs_arr[$item] = $imgs;
-					if($url){
-						Background::find($id)->update([$item . '_imgs' => $imgs]);
-					} else {
-						Property::setValue('imgs_' . $item, $imgs);
-					}
-				}
+		if($upd['spo'] || $upd['npo']){
+			foreach($bgs as $id => $url) {
+				dispatch(new ProcScheduleJob($id, $upd, $url));
+//			$imgs_arr = [];
+//			foreach(['npo', 'spo'] as $item){
+//				if ($upd[$item]) {
+//					$imgs = self::readePdf("http://rasp.kolledgsvyazi.ru/$item.pdf", $url);
+//					$imgs_arr[$item] = $imgs;
+//					if($url){
+//						Background::find($id)->update([$item . '_imgs' => $imgs]);
+//					} else {
+//						Property::setValue('imgs_' . $item, $imgs);
+//					}
+//				}
+//			}
+//
+//			self::procMesStud($id, $imgs_arr);
+
 			}
-
-			self::send($id, $imgs_arr);
-
+//			$arr = $upd;
+			$users = User::where('subscribe_status', 1)
+				->where('is_student', 0)
+				->with('background')
+				->get();
+			foreach($users as $user){
+				dispatch(new ProcTiSchedule($upd, $user));
+			}
 		}
 
 	}
+	public static function procMesTi(){
+		$users = User::where('subscribe_status', 1)
+			->where('is_student', 0)
+			->get();
+		foreach($users as $user){
+			$search = $user->search_string;
+			$proc_npo = new Excel($search, 'npo.xls');
+			$proc_spo = new Excel($search, 'spo.xls');
+			$classes_npo = $proc_npo->getClasses();
+			$classes_spo = $proc_spo->getClasses();
+			$result = 0;
+//			$imgs = self::readePdf("http://356476-cj50427.tmweb.ru", null);
+			$vk = new VkApi();
+//			$vk->sendMass('ok',$vk->id_admin, $imgs);
+			$imgs = [];
+			if($classes_npo == 0 && $classes_spo > 0){
 
-	public static function send($id, $imgs){
-		$vk     = new VkApi();
+				$proc_spo->save();
+				$imgs['spo'] = self::readePdf("http://356476-cj50427.tmweb.ru", null);
+				$ids[1] = [$user->id];
+
+			} elseif($classes_npo > 0 && $classes_spo == 0){
+
+				$proc_npo->save();
+				$imgs['npo'] = self::readePdf("http://356476-cj50427.tmweb.ru", null);
+				$ids[2] = [$user->id];
+
+			}elseif($classes_npo > 0 && $classes_spo > 0){
+
+				$proc_npo->save();
+				$imgs['npo'] = self::readePdf("http://356476-cj50427.tmweb.ru", null);
+				$proc_spo->save();
+				$imgs['spo'] = self::readePdf("http://356476-cj50427.tmweb.ru", null);
+				$ids[3] = [$user->id];
+
+			}else {
+				$vk->sendMass('Расписание обновлиось, но я не нашел вас в нем');
+			}
+			self::send($ids, $imgs);
+
+		}
+	}
+	public static function procMesStud($id, $imgs){
 
 		$users = User::where('subscribe_status', 1)
 			->where('background_id',$id)
+			->where('is_student', 1)
 			->get();
 		$ids = [];
 		foreach($users as $user){
 			$build = self::search($user->search_string);
 			$ids[$build][] = $user->id;
 		}
+		self::send($ids,$imgs);
+
+	}
+	public static function send($ids, $imgs){
+		$vk     = new VkApi();
+
 		if(isset($ids[0])){
 			if(isset($imgs['npo'])){
 				$vk->sendMass('Расписание обновилось. Я не нашел вас в расписании, поэтому буду скидывать обновления обоих корпусов. Вот 2 корпус', implode(',',$ids[0]), $imgs['npo']);

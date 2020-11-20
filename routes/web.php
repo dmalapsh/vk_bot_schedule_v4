@@ -27,8 +27,19 @@ $router->get('/cron',function () use ($router) {
 	return $router->app->version();
 });
 
+$router->get('/cron_queue',function () use ($router) {
+	exec('/opt/php72/bin/php /home/c/cm56270/bot/public_html/artisan queue:work --timeout=60 --tries=3  2>&1 &');
+});
 $router->get('/test',function () use ($router) {
-	\App\Schedule::send(6,1);
-	$resp = \App\Schedule::search('Хоробрая');
-	dd($resp);
+
+//	\App\Schedule::procMesTi();
+	dispatch(new \App\Jobs\SendingMessagesJob);
+//	dispatch(new \App\Jobs\ProcTiSchedule(['npo'=>false, 'spo'=>true]));
+
+//	return response()->json(\App\Schedule::getBg());
+//	$dh = new \App\Jobs\ProcTiSchedule();
+//	$dh->handle();
+//	\App\Schedule::send(6,1);
+//	$resp = \App\Schedule::search('Хоробрая');
+//	dd($resp);
 });

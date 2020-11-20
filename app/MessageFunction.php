@@ -80,6 +80,9 @@ class MessageFunction {
 				} else {
 					$imgs = Property::getValue('imgs_spo');
 				}
+				if(!$imgs){
+					return $this->send('Я обновляю расписание, спросите чуть позже');
+				}
 				$this->send('1 корпус', $imgs);
 				break;
 			case '/2':
@@ -87,6 +90,9 @@ class MessageFunction {
 					$imgs = $this->user->background->npo_imgs;
 				} else {
 					$imgs = Property::getValue('imgs_npo');
+				}
+				if(!$imgs){
+					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
 				$this->send('2 корпус',  $imgs);
 				break;
@@ -99,6 +105,9 @@ class MessageFunction {
 				break;
 			case '//':
 				$this->send('убрано', null, VkApi::BUTTON['none']);
+				break;
+			case '/tableflip':
+				$this->send('(╯°□°）╯︵ ┻━┻');
 				break;
 			case 'unsub':
 				$this->user->subscribe(0);
@@ -122,7 +131,9 @@ class MessageFunction {
 					return false;
 				}
 				$text = $this->defaultProcessingCustomText();
-				$this->send($text);
+				if($text){
+					$this->send($text);
+				}
 		}
 	}
 
@@ -134,6 +145,9 @@ class MessageFunction {
 				} else {
 					$imgs = Property::getValue('imgs_spo');
 				}
+				if(!$imgs){
+					return $this->send('Я обновляю расписание, спросите чуть позже');
+				}
 				$this->send('1 корпус', $imgs);
 				break;
 			case '2':
@@ -141,6 +155,9 @@ class MessageFunction {
 					$imgs = $this->user->background->npo_imgs;
 				} else {
 					$imgs = Property::getValue('imgs_npo');
+				}
+				if(!$imgs){
+					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
 				$this->send('2 корпус',  $imgs);
 				break;
@@ -162,17 +179,28 @@ class MessageFunction {
 		}
 	}
 
+	private function defaultProcessingCustomText(){
+		$text = $this->text;
+		if($text{0} == "!"){
+			$str = substr($text, 1);
+			$str = mb_strtolower($str);
+			$this->text = $str;
+//			$this->user->subscribe(1, $str);
+			return $this->sub();
+		}
+	}
+
 	private function bgProcessing(){
 //		$this->send(json_encode($this->payload));
 		if($this->payload == 'cancel'){
 			$this->user->update(['function'=> 'default']);
 			return $this->send('Устновка фона отменена', null, $this->getDefaultBtn());
 		}
-		if(preg_match('/[0-9]+/', $this->text)){
-			$bg_id = $this->text;
-			if($bg_id{0} == "/") {
-				$bg_id = substr($bg_id, 1);
-			}
+		$bg_id = $this->text;
+		if($bg_id{0} == "/") {
+			$bg_id = substr($bg_id, 1);
+		}
+		if(is_numeric($bg_id)){
 			$bg = Background::find($bg_id);
 
 //			return $this->send(json_encode($bg));
@@ -198,20 +226,22 @@ class MessageFunction {
 
 	public function sub(){
 		$builder = Schedule::search($this->text);
+		$is_student = preg_match('/[0-9]+/', $this->text);
+		$is_student_str = $is_student ? 'студентом': 'преподавателем';
 		switch($builder){
 			case 0:
 				return $this->send('Я не нашел Вас в расписании, проверьте правильность ввода или обратитесь к разработчику');
 			case 1:
-				$this->send('Вы подписаны. Пары на сегодня я нашел в первом корпусе, если это не так - обратитесь к разработчику', null, VkApi::BUTTON['default']);
+				$this->send("Вы подписаны и являетесь $is_student_str. Пары на сегодня я нашел в первом корпусе, если это не так - обратитесь к разработчику", null, VkApi::BUTTON['default']);
 				break;
 			case 2:
-				$this->send('Вы подписаны. Пары на сегодня я нашел во втором корпусе, если это не так - обратитесь к разработчику', null, VkApi::BUTTON['default']);
+				$this->send("Вы подписаны и являетесь $is_student_str. Пары на сегодня я нашел во втором корпусе, если это не так - обратитесь к разработчику", null, VkApi::BUTTON['default']);
 				break;
 			case 3:
-				$this->send('Вы подписаны. Пары на сегодня я нашел как в первом, так и во втором корпусе, если это не так - обратитесь к разработчику', null, VkApi::BUTTON['default']);
+				$this->send("Вы подписаны и являетесь $is_student_str. Пары на сегодня я нашел как в первом, так и во втором корпусе, если это не так - обратитесь к разработчику", null, VkApi::BUTTON['default']);
 				break;
 		}
-		$this->user->subscribe(1, $this->text);
+		$this->user->subscribe(1, $this->text, $is_student);
 		$this->userFun('default');
 	}
 
@@ -233,18 +263,6 @@ class MessageFunction {
 		$bg = new Background(['url'=>$bg_url]);
 		$bg->save();
 		$this->send('Фон зарегистрирован в системе, теперь его можно подключить используя этот код: ' . $bg->id);
-	}
-
-	private function defaultProcessingCustomText(){
-		$text = $this->text;
-		if($text{0} == "!"){
-			$str = substr($text, 1);
-			$str = mb_strtolower($str);
-			$this->user->subscribe(1, $str);
-			return 'subscribed';
-		} else {
-			return $text;
-		}
 	}
 
 	private function send($text, $imgs = null, $btn = null){
