@@ -213,7 +213,7 @@ class MessageFunction {
 			}
 
 		} else {
-			$this->send('Ожидалось чило');
+			$this->send('Ожидалось чиcло');
 		}
 	}
 

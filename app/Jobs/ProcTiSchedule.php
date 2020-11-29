@@ -18,8 +18,7 @@ class ProcTiSchedule extends Job
      */
 	public $tries = 2;
 	public $timeout = 120;
-    public function __construct($arr,$user)
-    {
+    public function __construct($arr,$user) {
         $this->arr = $arr;
         $this->user = $user;
     }
@@ -29,8 +28,7 @@ class ProcTiSchedule extends Job
      *
      * @return void
      */
-    public function handle()
-    {
+    public function handle() {
 	    $user = $this->user;
 	    $arr = $this->arr;
 
@@ -43,29 +41,35 @@ class ProcTiSchedule extends Job
 
 	    $imgs = [];
 	    $ids = [null,null,null];
+	    if($user->background){
+		    $bg = $user->background->url;
+	    } else {
+		    $bg = false;
+	    }
+
 	    if($classes_npo == 0 && $classes_spo > 0){
 			if($arr['spo']){
 				$proc_spo->save();
-				$imgs['spo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $user->background->url);
+				$imgs['spo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $bg);
 				$ids[1] = [$user->id];
 			}
 
 	    } elseif($classes_npo > 0 && $classes_spo == 0){
 		    if($arr['npo']){
 			    $proc_npo->save();
-			    $imgs['npo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $user->background->url);
+			    $imgs['npo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $bg);
 			    $ids[2] = [$user->id];
 		    }
 
 	    }elseif($classes_npo > 0 && $classes_spo > 0){
 		    if($arr['npo']){
 			    $proc_npo->save();
-			    $imgs['npo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $user->background->url);
+			    $imgs['npo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $bg);
 			    $ids[3]      = [$user->id];
 		    }
 		    if($arr['spo']) {
 			    $proc_spo->save();
-			    $imgs['spo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $user->background->url);
+			    $imgs['spo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $bg);
 			    $ids[3]      = [$user->id];
 		    }
 
