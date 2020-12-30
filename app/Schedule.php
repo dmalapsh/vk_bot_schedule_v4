@@ -126,13 +126,14 @@ class Schedule {
 		$users = User::where('subscribe_status', 1)
 			->where('background_id',$id)
 			->where('is_student', 1)
-			->get();
-		$ids = [];
-		foreach($users as $user){
-			$build = self::search($user->search_string);
-			$ids[$build][] = $user->id;
-		}
-		self::send($ids,$imgs);
+			->chunk(99, function ($users) use ($imgs) {
+				$ids = [];
+				foreach($users as $user){
+					$build = self::search($user->search_string);
+					$ids[$build][] = $user->id;
+				}
+				self::send($ids,$imgs);
+			});
 
 	}
 	public static function send($ids, $imgs){

@@ -20,8 +20,8 @@ class VkApi {
 		],
 		'default' => ["buttons" =>[
 			[["action"=>['type'=> 'text', 'label'=>'🏢 1 корпус','payload' => ['button'=>"1"]],'color'=>'positive'],["action"=>['type'=> 'text', 'label'=>'🏢 2 корпус','payload' => ['button'=>"2"]],'color'=>'positive']],
-			[["action"=>['type'=> 'text', 'label'=>'Сменить фон','payload' => ['button'=>"bg"]],'color'=>'secondary']],
-			[["action"=>['type'=> 'text', 'label'=>'Отписаться','payload' => ['button'=>"unsub"]],'color'=>'primary']],
+			[["action"=>['type'=> 'text', 'label'=>'Сменить фон','payload' => ['button'=>"bg"]],'color'=>'secondary'],["action"=>['type'=> 'text', 'label'=>'Отписаться','payload' => ['button'=>"unsub"]],'color'=>'negative']],
+			[["action"=>['type'=> 'text', 'label'=>'Пожертвовать','payload' => ['button'=>"don"]],'color'=>'primary']],
 		]
 		],'{"buttons":[
 	        [{"action":{"type":"text","label":"🏢 1 корпус"},"color":"negative","payload": "{\"button\"}"},{"action":{"type":"text","label":"🏢 2 корпус"},"color":"negative"}], 

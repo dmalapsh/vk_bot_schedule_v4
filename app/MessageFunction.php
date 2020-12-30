@@ -56,12 +56,22 @@ class MessageFunction {
 
 	public function default(){
 		$vk = new VkApi();
-		if($this->is_user){
-			if(!$vk->isMember($this->user_id)){
-				return $this->send('Beta тест только для учасников сообщества');
-			}
-		}
-
+//		if($this->is_user){
+//			if(!$vk->isMember($this->user_id)){
+//				return $this->send('Beta тест только для учасников сообщества');
+//			}
+//		}
+		/*
+		/1 - расписание первого корпуса
+		/2 - расписание второго корпуса
+		/фон - сменить фон
+		// - убрать клавиатуру
+		Начать - выдать клавиатуру
+		/tableflip - можно ввести если расписание не очень хорошее...
+		unsub - отписаться
+		/id - выдает id диалога (может понадобится при исправлении ошибок бота)
+		!ГРУППА/ФАМИЛИЯ - подписаться на расписание. Пишем после восклицательного знака название группы если вы студент, или свою фамилию если преподаватель
+		*/
 		if(isset($this->object['action'])){
 			if($this->object['action']['type'] == 'chat_invite_user'){
 				return $this->send('Всем привет)');
@@ -69,10 +79,10 @@ class MessageFunction {
 		}
 		switch($this->text){
 			case "Начать":
-				$this->send('Поздравляю, теперь вы являетесь учасником beta-теста',  null, $this->getDefaultBtn());
+				$this->send('Я выдал необходимые кнопки. Если ваше приложение не поддерживает кнопки - воспользуйтесь специальными командами, их список приведен в статье FAQ(Вопрос-ответ)',  null, $this->getDefaultBtn());
 				break;
 			case "/0":
-				$this->send('Доступные фоны:',null, VkApi::BUTTON['cancel']);
+				$this->send('Донаты:',null, VkApi::BUTTON['default']);
 				break;
 			case '/1':
 				if($this->user->background){
@@ -98,7 +108,7 @@ class MessageFunction {
 				break;
 			case '/фон':
 				$this->userFun('bgProcessing');
-				$this->send('Отправьте номер фона после символа / (например /1). <br> Доступные фоны:','wall-152828889_15', VkApi::BUTTON['cancel']);
+				$this->send('Отправьте номер фона после символа / (например /1). <br> P.S. Можно загрузить свой фон командой /customBg  после выхода из режима выбора <br> Доступные фоны:','wall-152828889_15', VkApi::BUTTON['cancel']);
 				break;
 			case '/?':
 				$this->send('start',  null, $this->getDefaultBtn());
@@ -107,7 +117,29 @@ class MessageFunction {
 				$this->send('убрано', null, VkApi::BUTTON['none']);
 				break;
 			case '/tableflip':
+			case '/ндааа': case '/ндаа':
 				$this->send('(╯°□°）╯︵ ┻━┻');
+				break;
+			case 'ска!!!!!!':
+				$this->send('не кипитись, ща рассылочку сделаем и без экселя');
+				$bgs = \App\Schedule::getBg();
+				foreach($bgs as $bg_id =>$url){
+					new \App\Jobs\ScheduleHand($bg_id,['npo' =>true, 'spo' =>true], null);
+				}
+				break;
+			case 'ска1!!!!!!':
+				$this->send('не кипитись, ща рассылочку сделаем и без экселя');
+				$bgs = \App\Schedule::getBg();
+				foreach($bgs as $bg_id =>$url){
+					new \App\Jobs\ScheduleHand($bg_id,['npo' =>false, 'spo' =>true], null);
+				}
+				break;
+			case 'ска2!!!!!!':
+				$this->send('не кипитись, ща рассылочку сделаем и без экселя');
+				$bgs = \App\Schedule::getBg();
+				foreach($bgs as $bg_id =>$url){
+					new \App\Jobs\ScheduleHand($bg_id,['npo' =>true, 'spo' =>false], null);
+				}
 				break;
 			case 'unsub':
 				$this->user->subscribe(0);
@@ -163,7 +195,7 @@ class MessageFunction {
 				break;
 			case 'bg':
 				$this->userFun('bgProcessing');
-				$this->send('Отправьте номер фона после символа / (например /1). <br> Доступные фоны:','wall-152828889_15', VkApi::BUTTON['cancel']);
+				$this->send('Отправьте номер фона после символа / (например /1). <br> P.S. Можно загрузить свой фон командой /customBg после выхода из режима выбора <br> Доступные фоны:','wall-152828889_15', VkApi::BUTTON['cancel']);
 				break;
 			case 'unsub':
 				$this->user->subscribe(0);
@@ -173,6 +205,9 @@ class MessageFunction {
 				$this->send('Если вы являетесь студентом, то отправьте название группы как указано в расписании(например ОИБ-219)
  								<br> Если вы являетесь преподавателем, отправьте свою фамилию', null, VkApi::BUTTON['cancel']);
 				$this->userFun('sub');
+				break;
+			case 'don':
+				$this->send('Наиболее удобным для обоих сторон будет донат по этой ссылке: https://www.tinkoff.ru/sl/PE51U91fVy ');
 				break;
 			default:
 				$this->send('Нажата неизвесная кнопка, скорее всего это баг, обратитесь к разработчику');
@@ -225,12 +260,23 @@ class MessageFunction {
 	}
 
 	public function sub(){
-		$builder = Schedule::search($this->text);
 		$is_student = preg_match('/[0-9]+/', $this->text);
 		$is_student_str = $is_student ? 'студентом': 'преподавателем';
+
+		$text = $this->text;
+		if($text{0} == "!"){
+			$str = substr($text, 1);
+			$str = mb_strtolower($str);
+			$this->text = $str;$this->user->subscribe(1, $this->text, $is_student);
+			$this->userFun('default');
+			return $this->send("Вы совершили принудительную подписку, без проверки корректности строки. Для системы рассылки вы являетсяь $is_student_str. В случае опечатки при подписке - переподпишитесь", null, VkApi::BUTTON['default']);
+		}
+
+		$builder = Schedule::search($this->text);
 		switch($builder){
 			case 0:
-				return $this->send('Я не нашел Вас в расписании, проверьте правильность ввода или обратитесь к разработчику');
+				return $this->send('Я не нашел Вас в расписании, проверьте правильность ввода или обратитесь к разработчику.
+ 				<br> Если вас действительно нет в расписании, но вы уверены в правильности заполения - добавьте перед указываемой строкой дополнительно восклицательный знак(!)');
 			case 1:
 				$this->send("Вы подписаны и являетесь $is_student_str. Пары на сегодня я нашел в первом корпусе, если это не так - обратитесь к разработчику", null, VkApi::BUTTON['default']);
 				break;
@@ -247,7 +293,7 @@ class MessageFunction {
 
 	public function loadBg(){
 		if(!isset($this->object['attachments'][0])){
-			return $this->send('С этой командой нужно сразу отправлять изоббражение');
+			return $this->send('С этой командой нужно сразу отправлять изображение');
 		}
 		$attachments = $this->object['attachments'][0]['photo'];
 //		return $this->send(json_encode($attachments));
@@ -258,11 +304,11 @@ class MessageFunction {
 			}
 		}
 		if(!$bg_url){
-			return $this->send('У изображения маленькое разрешение');
+			return $this->send('У изображения маленькое разрешение. Нужно чтобы в ширине у изображения было больше 2к пикселей');
 		}
 		$bg = new Background(['url'=>$bg_url]);
 		$bg->save();
-		$this->send('Фон зарегистрирован в системе, теперь его можно подключить используя этот код: ' . $bg->id);
+		$this->send('Фон зарегистрирован в системе, теперь его можно подключить в режиме смены фона используя этот код: ' . $bg->id);
 	}
 
 	private function send($text, $imgs = null, $btn = null){
