@@ -93,7 +93,7 @@ class MessageFunction {
 				if(!$imgs){
 					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
-				$this->send('1 корпус', $imgs);
+				$this->send('1 корпус пока не актуален, но мы исправляемэту проблему', $imgs);
 				break;
 			case '/2':
 				if($this->user->background){
@@ -104,7 +104,7 @@ class MessageFunction {
 				if(!$imgs){
 					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
-				$this->send('2 корпус',  $imgs);
+				$this->send('2 корпус пока не актуален, но мы исправляемэту проблему',  $imgs);
 				break;
 			case '/фон':
 				$this->userFun('bgProcessing');
@@ -123,22 +123,25 @@ class MessageFunction {
 			case 'ска!!!!!!':
 				$this->send('не кипитись, ща рассылочку сделаем и без экселя');
 				$bgs = \App\Schedule::getBg();
+				dispatch(new \App\Jobs\ScheduleHand(0,['npo' =>true, 'spo' =>true], null));
 				foreach($bgs as $bg_id =>$url){
-					new \App\Jobs\ScheduleHand($bg_id,['npo' =>true, 'spo' =>true], null);
+					dispatch(new \App\Jobs\ScheduleHand($bg_id,['npo' =>true, 'spo' =>true], $url));
 				}
 				break;
 			case 'ска1!!!!!!':
 				$this->send('не кипитись, ща рассылочку сделаем и без экселя');
+				new \App\Jobs\ScheduleHand(0,['npo' =>false, 'spo' =>true], null);
 				$bgs = \App\Schedule::getBg();
 				foreach($bgs as $bg_id =>$url){
-					new \App\Jobs\ScheduleHand($bg_id,['npo' =>false, 'spo' =>true], null);
+					dispatch(new \App\Jobs\ScheduleHand($bg_id,['npo' =>false, 'spo' =>true], $url));
 				}
 				break;
 			case 'ска2!!!!!!':
 				$this->send('не кипитись, ща рассылочку сделаем и без экселя');
 				$bgs = \App\Schedule::getBg();
+				dispatch(new \App\Jobs\ScheduleHand(0,['npo' =>true, 'spo' =>false], null));
 				foreach($bgs as $bg_id =>$url){
-					new \App\Jobs\ScheduleHand($bg_id,['npo' =>true, 'spo' =>false], null);
+					dispatch(new \App\Jobs\ScheduleHand($bg_id,['npo' =>true, 'spo' =>false], $url));
 				}
 				break;
 			case 'unsub':
@@ -180,7 +183,7 @@ class MessageFunction {
 				if(!$imgs){
 					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
-				$this->send('1 корпус', $imgs);
+				$this->send('1 корпус пока не актуален, но мы исправляемэту проблему', $imgs);
 				break;
 			case '2':
 				if($this->user->background){
@@ -191,7 +194,7 @@ class MessageFunction {
 				if(!$imgs){
 					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
-				$this->send('2 корпус',  $imgs);
+				$this->send('2 корпус пока не актуален, но мы исправляемэту проблему',  $imgs);
 				break;
 			case 'bg':
 				$this->userFun('bgProcessing');

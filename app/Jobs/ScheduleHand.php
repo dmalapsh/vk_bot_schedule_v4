@@ -25,7 +25,7 @@ class ScheduleHand extends Job
 		$this->bg_id = $bg_id;
 		$this->upd = $upd;
 		$this->url = $url;
-		$this->handle();
+//		$this->handle();
 	}
 
 	/**
@@ -34,9 +34,6 @@ class ScheduleHand extends Job
 	 * @return void
 	 */
 	public function handle() {
-		if(){
-
-		}
 		$imgs_arr = [];
 		foreach(['npo', 'spo'] as $item) {
 			if($this->upd[$item]) {

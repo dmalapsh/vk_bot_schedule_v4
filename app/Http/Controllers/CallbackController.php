@@ -25,8 +25,8 @@ class CallbackController extends Controller
 			    break;
 		    //если запрет на отправку сообщений
 		    case 'message_deny':
-			    $user_id = $data->object->user_id;
-			    subscribe($user_id, 0);
+			    $this->user_id = $request->object['user_id'];
+			    $this->subscribe(0);
 	    }
     	return response('ok');
     }
