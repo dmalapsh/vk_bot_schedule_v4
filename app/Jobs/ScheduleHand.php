@@ -52,7 +52,7 @@ class ScheduleHand extends Job
 		$ctx = $this;
 		User::where('subscribe_status', 1)
 			->where('background_id', $this->bg_id)
-			->where('is_student', 3)
+//			->where('is_student', 3)
 			->chunk(99, function ($users) use ($ctx, $imgs_arr) {
 				$ctx->send($users, $imgs_arr);
 			});

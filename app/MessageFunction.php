@@ -93,7 +93,7 @@ class MessageFunction {
 				if(!$imgs){
 					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
-				$this->send('1 корпус пока не актуален, но мы исправляемэту проблему', $imgs);
+				$this->send('1 корпус', $imgs);
 				break;
 			case '/2':
 				if($this->user->background){
@@ -104,7 +104,7 @@ class MessageFunction {
 				if(!$imgs){
 					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
-				$this->send('2 корпус пока не актуален, но мы исправляемэту проблему',  $imgs);
+				$this->send('2 корпус',  $imgs);
 				break;
 			case '/фон':
 				$this->userFun('bgProcessing');
@@ -183,7 +183,7 @@ class MessageFunction {
 				if(!$imgs){
 					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
-				$this->send('1 корпус пока не актуален, но мы исправляемэту проблему', $imgs);
+				$this->send('1 корпус', $imgs);
 				break;
 			case '2':
 				if($this->user->background){
@@ -194,7 +194,7 @@ class MessageFunction {
 				if(!$imgs){
 					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
-				$this->send('2 корпус пока не актуален, но мы исправляемэту проблему',  $imgs);
+				$this->send('2 корпус',  $imgs);
 				break;
 			case 'bg':
 				$this->userFun('bgProcessing');

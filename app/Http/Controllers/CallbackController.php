@@ -27,6 +27,27 @@ class CallbackController extends Controller
 		    case 'message_deny':
 			    $this->user_id = $request->object['user_id'];
 			    $this->subscribe(0);
+			    break;
+		    case 'message_reply':
+			    $vk = new VkApi();
+			    $data = $request->object;
+			    if($data['text'] == 'info'){
+//				    $vk->sendMass('ok', $vk->id_admin);
+				    $user_id = $data['peer_id'];
+				    $user = User::find($user_id);
+				    $text = "Подписка: $user->subscribe_status
+							Поисковой индекс: $user->search_string
+							Студент?: $user->is_student
+							Фон: $user->background_id
+							Режим: $user->function
+							Первое обращение: $user->created_at
+							Смена статусов: $user->updated_at
+								";
+				    $vk->editMessage($text, $data['id'], $data['peer_id']);
+
+			    }
+			    break;
+
 	    }
     	return response('ok');
     }

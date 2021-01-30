@@ -6,6 +6,7 @@ namespace App;
 
 use App\Jobs\ProcScheduleJob;
 use App\Jobs\ProcTiSchedule;
+use Carbon\Carbon;
 use Imagick;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -21,7 +22,24 @@ class Schedule {
 		curl_close ($ch);
 		$last = explode ("\r\n",$content)[3];
 		$updated_at = Property::getValue('updated_at_'.$name);
+		Property::setValue('updated_at_date_'.$name, Carbon::now());
+//		dd('ok');
 		Property::setValue('updated_at_'.$name, $last);
+		self::checkUpdatePdf($name);
+		return $last != $updated_at;
+	}
+	public static function checkUpdatePdf($name){
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, "http://rasp.kolledgsvyazi.ru/$name.pdf");
+		curl_setopt($ch, CURLOPT_HEADER, true);
+		curl_setopt($ch, CURLOPT_NOBODY, true);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$content = curl_exec ($ch);
+		curl_close ($ch);
+		$last = explode ("\r\n",$content)[3];
+		$updated_at = Property::getValue('updated_at_'.$name);
+		Property::setValue('updated_at_pdf_'.$name, $last);
 		return $last != $updated_at;
 	}
 

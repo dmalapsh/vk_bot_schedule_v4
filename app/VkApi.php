@@ -56,6 +56,14 @@ class VkApi {
 		];
 		$this->apiRequest($request_params, 'messages.setActivity');
 	}
+	public function editMessage($text, $message_id, $peer_id){
+		$request_params = [
+			'message' => $text,
+			'message_id'    => $message_id,
+			'peer_id'    => $peer_id
+		];
+		$this->apiRequest($request_params, 'messages.edit');
+	}
 
 	public function sendMass($text, $user_id, $attach = null, $btn = false){
 
