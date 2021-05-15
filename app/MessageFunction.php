@@ -85,6 +85,8 @@ class MessageFunction {
 				$this->send('Донаты:',null, VkApi::BUTTON['default']);
 				break;
 			case '/1':
+				if($this->user->background_id) Schedule::updateBg($this->user->background);
+            
 				if($this->user->background){
 					$imgs = $this->user->background->spo_imgs;
 				} else {
@@ -96,13 +98,17 @@ class MessageFunction {
 				$this->send('1 корпус', $imgs);
 				break;
 			case '/2':
+				if($this->user->background_id) Schedule::updateBg($this->user->background);
+            
 				if($this->user->background){
 					$imgs = $this->user->background->npo_imgs;
 				} else {
 					$imgs = Property::getValue('imgs_npo');
 				}
 				if(!$imgs){
-					return $this->send('Я обновляю расписание, спросите чуть позже');
+                  	if($this->user->bg_id) Schedule::updateBg($this->user->bg_id);
+					return $this->send('Я не нашел расисания с таким фоном. Сейчас подгружу, спросите через две минутки');
+					//return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
 				$this->send('2 корпус',  $imgs);
 				break;
@@ -175,6 +181,9 @@ class MessageFunction {
 	public function defaultPayload(){
 		switch($this->payload){
 			case '1':
+            
+				if($this->user->background_id) Schedule::updateBg($this->user->background);
+            
 				if($this->user->background){
 					$imgs = $this->user->background->spo_imgs;
 				} else {
@@ -186,6 +195,9 @@ class MessageFunction {
 				$this->send('1 корпус', $imgs);
 				break;
 			case '2':
+            
+				if($this->user->background_id) Schedule::updateBg($this->user->background);
+            
 				if($this->user->background){
 					$imgs = $this->user->background->npo_imgs;
 				} else {
