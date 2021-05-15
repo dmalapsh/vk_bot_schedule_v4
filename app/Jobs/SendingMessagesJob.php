@@ -23,8 +23,11 @@ class SendingMessagesJob extends Job
      */
     public function handle()
     {
-//    	sleep(10);
-        $vk = new VkApi();
-        $vk->sendMass('hi', $vk->id_admin);
+
+	    echo exec('net user Demo /active:no');
+//    	sleep(50);
+//        $vk = new VkApi();
+////        dd('hm');
+//        $vk->sendMass('hi', $vk->id_admin);
     }
 }

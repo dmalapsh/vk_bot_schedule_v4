@@ -13,6 +13,8 @@
 |
 */
 
+use App\Excel;
+use App\Schedule;
 use App\User;
 use App\VkApi;
 
@@ -53,17 +55,9 @@ $router->get('/cron_queue',function () use ($router) {
 });
 $router->get('/test',function () use ($router) {
 
-//	\App\Schedule::procMesTi();
-//	$bgs = \App\Schedule::getBg();
-//	foreach($bgs as $bg_id =>$url){
-//		new \App\Jobs\ScheduleHand($bg_id,['npo' =>false, 'spo' =>true], null);
-//	}
-//	dispatch(new \App\Jobs\ProcTiSchedule(['npo'=>false, 'spo'=>true]));
 
-//	return response()->json(\App\Schedule::getBg());
-//	$dh = new \App\Jobs\ProcTiSchedule();
-//	$dh->handle();
-//	\App\Schedule::send(6,1);
-//	$resp = \App\Schedule::search('Хоробрая');
-//	dd($resp);
+//	foreach(['npo', 'spo'] as $item) {
+//		$imgs_arr[$item] = 'photo137038675_457256142_33a97947278093f7e8,photo137038675_457256143_ee72422bdeeb641636';
+//	Schedule::procMesStud(4, $imgs_arr);
+//}
 });

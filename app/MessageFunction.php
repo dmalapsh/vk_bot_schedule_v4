@@ -91,7 +91,8 @@ class MessageFunction {
 					$imgs = Property::getValue('imgs_spo');
 				}
 				if(!$imgs){
-					return $this->send('Я обновляю расписание, спросите чуть позже');
+					if($this->user->bg_id) Schedule::updateBg($this->user->bg_id);
+					return $this->send('Я не нашел расисания с таким фоном. Сейчас подгружу, спросите через две минутки');
 				}
 				$this->send('1 корпус', $imgs);
 				break;
@@ -102,6 +103,7 @@ class MessageFunction {
 					$imgs = Property::getValue('imgs_npo');
 				}
 				if(!$imgs){
+
 					return $this->send('Я обновляю расписание, спросите чуть позже');
 				}
 				$this->send('2 корпус',  $imgs);

@@ -126,6 +126,7 @@ class VkApi {
 		 $url = sprintf( 'https://api.vk.com/method/%s', $method);
 
 		 $ch = curl_init();
+
 //		 dd($url);
 		 curl_setopt_array( $ch, [
 			 CURLOPT_POST    => TRUE,            // это именно POST запрос!

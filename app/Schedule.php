@@ -44,7 +44,7 @@ class Schedule {
 	}
 
 	public static function clearBG(){
-//		return ['npo'=>true, 'spo'=>true];
+//		return ['npo'=>false, 'spo'=>true];
 
 		$upd = [
 			'npo' => 	self::checkUpdate('npo'),
@@ -68,6 +68,7 @@ class Schedule {
 		$upd    = self::clearBG();
 
 		if($upd['spo'] || $upd['npo']){
+			//для студентов
 			foreach($bgs as $id => $url) {
 				dispatch(new ProcScheduleJob($id, $upd, $url));
 //			$imgs_arr = [];
@@ -87,6 +88,7 @@ class Schedule {
 
 			}
 //			$arr = $upd;
+			//для преподов
 			$users = User::where('subscribe_status', 1)
 				->where('is_student', 0)
 				->with('background')
@@ -155,6 +157,7 @@ class Schedule {
 
 	}
 	public static function send($ids, $imgs){
+//		return;
 		$vk     = new VkApi();
 
 		if(isset($ids[0])){
@@ -197,7 +200,10 @@ class Schedule {
 		$path = storage_path('app/tmp_img.jpg');
 		$vk = new VkApi();
 
-		$fp_pdf = fopen($url, 'rb');
+
+
+		copy($url, storage_path('app/tmp.pdf'));
+		$fp_pdf = fopen(storage_path('app/tmp.pdf'), 'rb');
 
 		$_img = new imagick(); // [0] can be used to set page number
 		$_img->setResolution(300, 300);
@@ -211,10 +217,12 @@ class Schedule {
 			$img->adaptiveResizeImage(2560, 1810);
 //						dd($img->getImageBackgroundColor());
 			if($bg_url){
-				$bg = new imagick($bg_url);
+				copy($bg_url, storage_path('app/tmp_bg_img.jpg'));
+				$bg = new imagick(storage_path('app/tmp_bg_img.jpg'));
 			} else {
 				//белый фон... здраьсте костыли
-				$bg = new imagick('https://panceramic.ru/image/cache/siena-ivory/catalog/li/siena-ivory-200-200-m-750x750.jpeg');
+//				$bg = new imagick('http://panceramic.ru/image/cache/siena-ivory/catalog/li/siena-ivory-200-200-m-750x750.jpeg');
+				$bg = new imagick('C:\OpenServer\domains\bot\storage\app\bg.jpeg');
 			}
 			$bg->adaptiveResizeImage(2560, 1810);
 			$bg->compositeImage($img, imagick::COMPOSITE_MULTIPLY, 0, 0);
@@ -254,7 +262,7 @@ class Schedule {
 		} else {
 			return 0;
 		}
-//		$path = storage_path('app/temp.xls');
+//		$path = storage_path('app/temp.xlsx');
 //		copy('http://rasp.kolledgsvyazi.ru/'. $load, $path);         //загрузка на сервер файла второго корпуса
 //
 //		$reader = IOFactory::createReader('Xls');//объект читателя

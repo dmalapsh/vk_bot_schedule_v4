@@ -45,7 +45,7 @@ class Excel {
 
 	public function __construct($string, $load) {
 
-		$path = storage_path('app/temp.xls');
+		$path = storage_path('app/temp.xlsx');
 		copy('http://rasp.kolledgsvyazi.ru/'. $load, $path);         //загрузка на сервер файла второго корпуса
 		$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');//объект читателя
 		$spreadsheet = $reader->load($path);                           //чтение скаченного файла
@@ -89,6 +89,7 @@ class Excel {
 		$path = storage_path('app/tmp.xlsx');
 		$writer = new Xlsx($this->spreadsheet);
 		$writer->save($path);
+		echo exec('Cscript.exe C:\OpenServer\domains\bot\convert_xls_to_pdf.vbs'); //еще и pdf генерим
 	}
 
 	public function getSpreadsheet(){

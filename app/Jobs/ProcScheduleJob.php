@@ -8,8 +8,8 @@ use App\Schedule;
 
 class ProcScheduleJob extends Job
 {
-	public $tries = 2;
-	public $timeout = 120;
+//	public $tries = 2;
+//	public $timeout = 120;
 	public $bg_id;
 	public $upd;
 	public $url;
@@ -31,8 +31,9 @@ class ProcScheduleJob extends Job
      * @return void
      */
     public function handle() {
-	    $imgs_arr = [];
 	    foreach(['npo', 'spo'] as $item) {
+//		    $imgs_arr[$item] = 'photo137038675_457256142_33a97947278093f7e8,photo137038675_457256143_ee72422bdeeb641636';
+
 		    if($this->upd[$item]) {
 			    $imgs            = Schedule::readePdf("http://rasp.kolledgsvyazi.ru/$item.pdf", $this->url);
 			    $imgs_arr[$item] = $imgs;

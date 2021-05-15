@@ -50,26 +50,26 @@ class ProcTiSchedule extends Job
 	    if($classes_npo == 0 && $classes_spo > 0){
 			if($arr['spo']){
 				$proc_spo->save();
-				$imgs['spo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $bg);
+				$imgs['spo'] = Schedule::readePdf(storage_path('app\tmp.pdf'), $bg);
 				$ids[1] = [$user->id];
 			}
 
 	    } elseif($classes_npo > 0 && $classes_spo == 0){
 		    if($arr['npo']){
 			    $proc_npo->save();
-			    $imgs['npo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $bg);
+			    $imgs['npo'] = Schedule::readePdf(storage_path('app\tmp.pdf'), $bg);
 			    $ids[2] = [$user->id];
 		    }
 
 	    }elseif($classes_npo > 0 && $classes_spo > 0){
 		    if($arr['npo']){
 			    $proc_npo->save();
-			    $imgs['npo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $bg);
+			    $imgs['npo'] = Schedule::readePdf(storage_path('app\tmp.pdf'), $bg);
 			    $ids[3]      = [$user->id];
 		    }
 		    if($arr['spo']) {
 			    $proc_spo->save();
-			    $imgs['spo'] = Schedule::readePdf("http://356476-cj50427.tmweb.ru", $bg);
+			    $imgs['spo'] = Schedule::readePdf(storage_path('app\tmp.pdf'), $bg);
 			    $ids[3]      = [$user->id];
 		    }
 
