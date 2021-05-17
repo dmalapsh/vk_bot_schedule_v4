@@ -48,6 +48,10 @@ $router->get('/bg_link',function () use ($router) {
 	}
 });
 
+$router->get('/server',"ServerController@index");
+$router->post('/server',"ServerController@index");
+$router->post('/auth',"ServerController@auth");
+
 $router->get('/cron_queue',function () use ($router) {
 	exec('/opt/php72/bin/php /home/c/cm56270/bot/public_html/artisan queue:work --timeout=60 --tries=3  2>&1 &');
 });
