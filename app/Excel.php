@@ -89,6 +89,10 @@ class Excel {
 		$path = storage_path('app/tmp.xlsx');
 		$writer = new Xlsx($this->spreadsheet);
 		$writer->save($path);
+
+		$path_pdf = storage_path('app/tmp.pdf');
+		$comand = "unoconv --format=pdf --output=$path_pdf $path";
+		exec($comand);
 	}
 
 	public function getSpreadsheet(){
