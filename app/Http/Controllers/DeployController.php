@@ -9,13 +9,11 @@ class DeployController extends Controller
 
 	public function index(){
 		//берем файлы
-		console_run("ls");
-		echo "<br>";
-		console_run("cd /var/www/bot && git pull");
+		$result = console_run("cd /var/www/bot && git pull");
 		echo "<br>";
 //		//перезапускаем очереди
 		console_run("supervisorctl restart laravel-worker");
-
+		dd($result);
 		Artisan::call("send:mes deploy");
 	}
 }
