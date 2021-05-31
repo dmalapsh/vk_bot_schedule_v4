@@ -22,6 +22,7 @@ $router->get('/', function () use ($router) {
 });
 $router->post('call',"CallbackController@index");
 $router->get('deploy',"DeployController@index");
+$router->post('deploy',"DeployController@index");
 
 $router->get('/cron',function () use ($router) {
 	return \App\Schedule::checkSchedule();

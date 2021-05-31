@@ -13,7 +13,7 @@ class DeployController extends Controller
 		echo "<br>";
 //		//перезапускаем очереди
 		console_run("supervisorctl restart laravel-worker");
-		dd($result);
-		Artisan::call("send:mes deploy");
+//		dd($result);
+		Artisan::call("send:mes deploy" . $result["output"]);
 	}
 }
