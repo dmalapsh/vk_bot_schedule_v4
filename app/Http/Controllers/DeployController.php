@@ -8,12 +8,12 @@ class DeployController extends Controller
 {
 
 	public function index(){
-		//берем файлы
+		//берем файлы из гита
 		$result = console_run("cd /var/www/bot && git pull");
 		echo "<br>";
-//		//перезапускаем очереди
+ 		//перезапускаем очереди
 		console_run("supervisorctl restart laravel-worker");
-//		dd($result);
-		Artisan::call("send:mes deploy" . $result["output"]);
+		//пишем что задиплоили
+		Artisan::call("send:mes deploy");
 	}
 }
