@@ -15,10 +15,10 @@ class SendMass extends Command {
 	}
 
 	public function handle() {
-//    	$text = $this->argument("text");
+    	$text = $this->argument("text");
 //    	echo exec('net user Demo /active:yes');
 		$vk = new VkApi();
-		$vk->sendMass(get_current_user(), $vk->id_admin);
+		$vk->sendMass(get_current_user() . ": " . $text, $vk->id_admin);
 //	    echo exec('logout');
 
 //	    dispatch(new SendingMessagesJob());
