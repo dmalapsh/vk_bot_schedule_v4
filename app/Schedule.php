@@ -185,7 +185,9 @@ class Schedule {
 		foreach(['npo', 'spo'] as $item){
 			$prop = $item . '_imgs';
 			if(!$bg->$prop){
-				$imgs = self::readePdf("http://rasp.kolledgsvyazi.ru/$item.pdf", $bg->url);
+				$path = storage_path('app/temp.pdf');
+				copy("http://rasp.kolledgsvyazi.ru/$item.pdf", $path);
+				$imgs = self::readePdf($path, $bg->url);
 				$bg->$prop = $imgs;
 				$bg->save();
 			}

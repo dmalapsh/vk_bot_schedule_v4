@@ -8,8 +8,8 @@ use App\Schedule;
 
 class ProcScheduleJob extends Job
 {
-	public $tries = 2;
-	public $timeout = 120;
+	public $tries = 1;
+	public $timeout = 60;
 	public $bg_id;
 	public $upd;
 	public $url;
