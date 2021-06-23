@@ -13,7 +13,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 class Schedule {
 	public static function checkUpdate($name){
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http://rasp.kolledgsvyazi.ru/$name.xls");
+		curl_setopt($ch, CURLOPT_URL, "http://rasp.vksit.ru/$name.xls");
 		curl_setopt($ch, CURLOPT_HEADER, true);
 		curl_setopt($ch, CURLOPT_NOBODY, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -30,7 +30,7 @@ class Schedule {
 	}
 	public static function checkUpdatePdf($name){
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http://rasp.kolledgsvyazi.ru/$name.pdf");
+		curl_setopt($ch, CURLOPT_URL, "http://rasp.vksit.ru/$name.pdf");
 		curl_setopt($ch, CURLOPT_HEADER, true);
 		curl_setopt($ch, CURLOPT_NOBODY, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -188,7 +188,7 @@ class Schedule {
 		foreach(['npo', 'spo'] as $item){
 			$prop = $item . '_imgs';
 			if(!$bg->$prop){
-				$imgs = self::readePdf("http://rasp.kolledgsvyazi.ru/$item.pdf", $bg->url);
+				$imgs = self::readePdf("http://rasp.vksit.ru/$item.pdf", $bg->url);
 				$bg->$prop = $imgs;
 				$bg->save();
 			}
