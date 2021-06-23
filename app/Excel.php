@@ -46,7 +46,7 @@ class Excel {
 	public function __construct($string, $load) {
 
 		$path = storage_path('app/temp.xls');
-		copy('http://rasp.kolledgsvyazi.ru/'. $load, $path);         //загрузка на сервер файла второго корпуса
+		copy('http://rasp.vksit.ru/'. $load, $path);         //загрузка на сервер файла второго корпуса
 		$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');//объект читателя
 		$spreadsheet = $reader->load($path);                           //чтение скаченного файла
 

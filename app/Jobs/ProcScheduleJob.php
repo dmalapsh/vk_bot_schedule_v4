@@ -34,7 +34,7 @@ class ProcScheduleJob extends Job
 	    $imgs_arr = [];
 	    foreach(['npo', 'spo'] as $item) {
 		    if($this->upd[$item]) {
-			    $imgs            = Schedule::readePdf("http://rasp.kolledgsvyazi.ru/$item.pdf", $this->url);
+			    $imgs            = Schedule::readePdf("http://rasp.vksit.ru/$item.pdf", $this->url);
 			    $imgs_arr[$item] = $imgs;
 			    if($this->url) {
 				    Background::find($this->bg_id)->update([$item . '_imgs' => $imgs]);
