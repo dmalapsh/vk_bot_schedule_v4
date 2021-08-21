@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\RunCron;
+use App\Console\Commands\RunUpdateGroup;
 use App\Console\Commands\SendMass;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
@@ -17,6 +18,7 @@ class Kernel extends ConsoleKernel
 
 	protected $commands = [
 		RunCron::class,
+		RunUpdateGroup::class,
 		SendMass::class
 	];
 
