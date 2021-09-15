@@ -167,6 +167,9 @@ class MessageFunction {
 			case '/id':
 				$this->send($this->user_id);
 				break;
+			case 'Пожертвовать':
+				$this->send('Наиболее удобным для обоих сторон будет донат по этой ссылке: https://www.tinkoff.ru/sl/PE51U91fVy ');
+				break;
 			default:
 				if(!$this->is_user){
 					return false;
