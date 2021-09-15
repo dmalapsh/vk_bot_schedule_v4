@@ -124,7 +124,7 @@ class VkApi {
 
 	protected function apiRequest($request, $method){
 		 $request['access_token'] = $this->token;
-		 $request['v'] = '5.50';
+		 $request['v'] = '5.81';
 
 		 $url = sprintf( 'https://api.vk.com/method/%s', $method);
 
