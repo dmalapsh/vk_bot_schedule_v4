@@ -83,6 +83,7 @@ class VkApi {
 			$type_id => $user_id,
 			'attachment'  => $attach,
 			'keyboard' => $btn,
+			"random_id" => random_int(0, 2000000)
 			];
 		$resp = $this->apiRequest($request_params, 'messages.send');
 	}
