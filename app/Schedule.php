@@ -97,54 +97,13 @@ class Schedule {
 		}
 
 	}
-	public static function procMesTi(){
-		$users = User::where('subscribe_status', 1)
-			->where('is_student', 0)
-			->get();
-		foreach($users as $user){
-			$search = $user->search_string;
-			$proc_npo = new Excel($search, 'npo.xls');
-			$proc_spo = new Excel($search, 'spo.xls');
-			$classes_npo = $proc_npo->getClasses();
-			$classes_spo = $proc_spo->getClasses();
-			$result = 0;
-//			$imgs = self::readePdf("http://356476-cj50427.tmweb.ru", null);
-			$vk = new VkApi();
-//			$vk->sendMass('ok',$vk->id_admin, $imgs);
-			$imgs = [];
-			if($classes_npo == 0 && $classes_spo > 0){
 
-				$proc_spo->save();
-				$imgs['spo'] = self::readePdf("http://356476-cj50427.tmweb.ru", null);
-				$ids[1] = [$user->id];
-
-			} elseif($classes_npo > 0 && $classes_spo == 0){
-
-				$proc_npo->save();
-				$imgs['npo'] = self::readePdf("http://356476-cj50427.tmweb.ru", null);
-				$ids[2] = [$user->id];
-
-			}elseif($classes_npo > 0 && $classes_spo > 0){
-
-				$proc_npo->save();
-				$imgs['npo'] = self::readePdf("http://356476-cj50427.tmweb.ru", null);
-				$proc_spo->save();
-				$imgs['spo'] = self::readePdf("http://356476-cj50427.tmweb.ru", null);
-				$ids[3] = [$user->id];
-
-			}else {
-				$vk->sendMass('Расписание обновлиось, но я не нашел вас в нем');
-			}
-			self::send($ids, $imgs);
-
-		}
-	}
 	public static function procMesStud($id, $imgs){
 
 		$users = User::where('subscribe_status', 1)
 			->where('background_id',$id)
 			->where('is_student', 1)
-			->chunk(99, function ($users) use ($imgs) {
+			->chunk(50, function ($users) use ($imgs) {
 				$ids = [];
 				foreach($users as $user){
 					$build = self::search($user->search_string);
