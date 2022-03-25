@@ -13,8 +13,17 @@
 |
 */
 
-use App\User;
-use App\VkApi;
+use Illuminate\Http\Request;
+Route::get('/map', function () {
+	return view('welcome');
+});
+
+Route::get("dtp", 'DtpController@index');
+Route::get("dtp/{id}",  'DtpController@show');
+
+Route::get('/login', function () {
+	return view('login');
+});
 
 $router->get('/', function () use ($router) {
 	return 'hi';
