@@ -12,15 +12,9 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Schedule {
 	public static function checkUpdate($name){
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http://rasp.vksit.ru/$name.xls");
-		curl_setopt($ch, CURLOPT_HEADER, true);
-		curl_setopt($ch, CURLOPT_NOBODY, true);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$content = curl_exec ($ch);
-		curl_close ($ch);
-		$last = explode ("\r\n",$content)[3];
+		$response = Http::get("http://rasp.vksit.ru/$name.xls");
+		$last = $response->header('Last-Modified');
+
 		$updated_at = Property::getValue('updated_at_'.$name);
 		Property::setValue('updated_at_date_'.$name, Carbon::now());
 //		dd('ok');
